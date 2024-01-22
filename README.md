@@ -10,6 +10,39 @@ To set up this project, clone the repository and install the required dependenci
 git clone https://github.com/VPLEV23/Iris_Classification_DS_Project
 cd iris_classification_ds_project
 ```
+### Setting Up a Local Development Environment
+
+It is recommended to create a virtual environment for development to manage dependencies effectively:
+
+1. **Create a Virtual Environment** (optional but recommended):
+   
+   If you're using Python 3, a virtual environment can be created by running:
+
+   ```
+   python -m venv env
+   ```
+
+   On Windows, you can activate the environment with:
+
+   ```
+   .\env\Scripts\activate
+   ```
+
+   On macOS and Linux, use:
+
+   ```
+   source env/bin/activate
+   ```
+
+2. **Install Required Packages**:
+
+   After activating your environment, install the required packages by running:
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+This will set up a local environment for you to develop and test the Iris Classification Project.
 
 Make sure Docker is installed on your system. If not, you can install it from [Docker's official website](https://www.docker.com/get-started).
 
