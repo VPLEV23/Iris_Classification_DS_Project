@@ -35,11 +35,12 @@ RESULTS_DIR = get_project_dir(conf['general']['results_dir'])
 
 # Initializes parser for command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--infer_file", 
-                    help="Specify inference data file", 
+parser.add_argument("--infer_file",
+                    help="Specify inference data file",
                     default=conf['inference']['inp_table_name'])
-parser.add_argument("--out_path", 
+parser.add_argument("--out_path",
                     help="Specify the path to the output table")
+
 
 class IrisNet(nn.Module):
     def __init__(self):
@@ -53,6 +54,7 @@ class IrisNet(nn.Module):
         x = self.relu(x)
         x = self.fc2(x)
         return x
+
 
 def get_latest_model_path() -> str:
     """Gets the path of the latest saved model"""
@@ -73,10 +75,12 @@ def get_model_by_path(path: str) -> IrisNet:
     logging.info(f'Path of the model: {path}')
     return model
 
+
 def prepare_data(df: pd.DataFrame) -> DataLoader:
     """Prepares pandas DataFrame for inference"""
     # Select only the relevant feature columns. Adjust the column names as per your data.
-    feature_columns = ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+    feature_columns = [
+        'sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
     df_features = df[feature_columns]
 
     scaler = StandardScaler()
@@ -85,6 +89,7 @@ def prepare_data(df: pd.DataFrame) -> DataLoader:
     dataset = TensorDataset(tensors)
     loader = DataLoader(dataset, batch_size=32)  # Adjust batch size as needed
     return loader
+
 
 def predict_results(model: IrisNet, loader: DataLoader) -> pd.DataFrame:
     """Predict the results"""
@@ -103,7 +108,8 @@ def store_results(results: pd.DataFrame, path: str = None) -> None:
     if not path:
         if not os.path.exists(RESULTS_DIR):
             os.makedirs(RESULTS_DIR)
-        path = datetime.now().strftime(conf['general']['datetime_format']) + '.csv'  
+        path = datetime.now().strftime(
+            conf['general']['datetime_format']) + '.csv'
         path = os.path.join(RESULTS_DIR, path)
     pd.DataFrame(results).to_csv(path, index=False)
     logging.info(f'Results saved to {path}')
@@ -122,6 +128,7 @@ def main():
     store_results(results, args.out_path)
 
     logging.info(f'Prediction results stored.')
+
 
 if __name__ == "__main__":
     main()
