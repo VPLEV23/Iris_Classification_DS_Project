@@ -1,8 +1,9 @@
-# Dockerfile for training
-# Start from a base Python image
+# Dockerfile for inference
+# Start from a base Python image with Python 3.10
 FROM python:3.10
 
-ARG model_name=prod_model.pickle
+# Set the model name and settings file name as arguments
+ARG model_name=iris_pytorch_model.pth
 ARG settings_name=settings.json
 ENV CONF_PATH=${settings_name}
 
@@ -12,12 +13,12 @@ WORKDIR /app
 COPY data/ /app/data
 
 # Copy models folder to Docker
-COPY models/${model_name} /app/models/${model_name}.pickle
+COPY models/${model_name} /app/models/${model_name}
 
-# Copy the code itself
+# Copy the inference code
 COPY inference /app/inference
 
-# Copy usefull scripts and configs
+# Copy utility scripts and configuration files
 COPY utils.py /app
 COPY ${CONF_PATH} /app
 
@@ -25,5 +26,5 @@ COPY ${CONF_PATH} /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Train the model
-RUN python3 inference/run.py
+# Command to run the inference script
+CMD ["python3", "inference/run.py"]
