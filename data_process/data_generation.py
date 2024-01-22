@@ -1,11 +1,16 @@
 # Importing required libraries
-import numpy as np
-import pandas as pd
-import logging
-import os
-import sys
-import json
 
+
+import json
+import sys
+import os
+import logging
+from sklearn.model_selection import train_test_split
+from sklearn import datasets
+import pandas as pd
+
+
+# Now you can import utils
 # Create logger
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -20,7 +25,7 @@ if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
 # Change to CONF_FILE = "settings.json" if you have problems with env variables
-CONF_FILE = os.getenv('CONF_PATH')
+CONF_FILE = '../settings.json'
 
 # Load configuration settings from JSON
 logger.info("Loading configuration settings from JSON...")
@@ -33,45 +38,31 @@ DATA_DIR = get_project_dir(conf['general']['data_dir'])
 TRAIN_PATH = os.path.join(DATA_DIR, conf['train']['table_name'])
 INFERENCE_PATH = os.path.join(DATA_DIR, conf['inference']['inp_table_name'])
 
-# Singleton class for generating XOR data set
+
 @singleton
-class XorSetGenerator():
+class IrisDatasetHandler():
     def __init__(self):
         self.df = None
 
-    # Method to create the XOR data
-    def create(self, len: int, save_path: os.path, is_labeled: bool = True):
-        logger.info("Creating XOR dataset...")
-        self.df = self._generate_features(len)
-        if is_labeled:
-            self.df = self._generate_target(self.df)
-        if save_path:
-            self.save(self.df, save_path)
-        return self.df
+    def download_and_split(self, test_size=0.2):
+        logger.info("Downloading Iris dataset...")
+        iris = datasets.load_iris()
+        self.df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+        self.df['target'] = iris.target
+        return train_test_split(self.df, test_size=test_size, random_state=42)
 
-    # Method to generate features
-    def _generate_features(self, n: int) -> pd.DataFrame:
-        logger.info("Generating features...")
-        x1 = np.random.choice([True, False], size=n)
-        x2 = np.random.choice([True, False], size=n)
-        return pd.DataFrame(list(zip(x1, x2)), columns=['x1', 'x2'])
+    def save(self, df: pd.DataFrame, path: str):
+        logger.info(f"Saving data to {path}...")
+        df.to_csv(path, index=False)
 
-    # Method to generate target
-    def _generate_target(self, df: pd.DataFrame) -> pd.DataFrame:
-        logger.info("Generating target...")
-        df['y'] = np.logical_xor(df['x1'], df['x2'])
-        return df
-    
-    # Method to save data
-    def save(self, df: pd.DataFrame, out_path: os.path):
-        logger.info(f"Saving data to {out_path}...")
-        df.to_csv(out_path, index=False)
 
 # Main execution
 if __name__ == "__main__":
     configure_logging()
     logger.info("Starting script...")
-    gen = XorSetGenerator()
-    gen.create(len=256, save_path=TRAIN_PATH)
-    gen.create(len=64, save_path=INFERENCE_PATH, is_labeled=False)
+    iris_handler = IrisDatasetHandler()
+    train_df, inference_df = iris_handler.download_and_split(
+        test_size=conf['train']['test_size'])
+    iris_handler.save(train_df, TRAIN_PATH)
+    iris_handler.save(inference_df, INFERENCE_PATH)
     logger.info("Script completed successfully.")
