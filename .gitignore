@@ -8,6 +8,8 @@ data/
 models/
 results/
 mlruns/
+# My local enviremnt for work
+env/ 
 
 # File Extensions
 *.csv
