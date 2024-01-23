@@ -14,13 +14,16 @@ import torch
 from datetime import datetime
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.preprocessing import StandardScaler
+from dotenv import load_dotenv
+load_dotenv()
 
 # Adds the root directory to system path
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(ROOT_DIR))
 
 # Change to CONF_FILE = "settings.json" if you have problems with env variables
-CONF_FILE = '../settings.json'
+CONF_PATH = os.getenv('CONF_PATH')
+CONF_FILE = CONF_PATH
 
 from utils import get_project_dir, configure_logging
 

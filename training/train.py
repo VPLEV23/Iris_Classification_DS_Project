@@ -15,7 +15,8 @@ import json
 import os
 import sys
 import mlflow
-
+from dotenv import load_dotenv
+load_dotenv()
 
 # Adds the root directory to system path
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -23,7 +24,8 @@ sys.path.append(os.path.dirname(ROOT_DIR))
 from utils import get_project_dir, configure_logging
 
 # Load configuration settings from JSON
-CONF_FILE = '../settings.json'
+CONF_PATH = os.getenv('CONF_PATH')
+CONF_FILE = CONF_PATH
 with open(CONF_FILE, "r") as file:
     conf = json.load(file)
 
@@ -123,8 +125,7 @@ class Training:
             mlflow.log_metric('precision', precision, step=epoch)
             mlflow.log_metric('recall', recall, step=epoch)
             mlflow.log_metric('f1_score', f1, step=epoch)
-            logging.info(f"Epoch: {epoch}, Loss: {loss.item()}, Accuracy: {
-                         accuracy}, Precision: {precision}, Recall: {recall}, F1-Score: {f1}")
+            logging.info(f"Epoch: {epoch}, Loss: {loss.item()}, Accuracy: {accuracy}, Precision: {precision}, Recall: {recall}, F1-Score: {f1}")
         logging.info("Training completed.")
 
     def save_model(self, model_path):

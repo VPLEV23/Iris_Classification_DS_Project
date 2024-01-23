@@ -81,15 +81,14 @@ docker run -it training_image /bin/bash
 ```
 Then, move the trained model from the directory inside the Docker container `/app/models` to the local machine using:
 ```bash
-docker cp <container_id>:/app/models/<model_name>.pickle ./models
+docker cp <container_id>:/app/models/<model_name>.pth ./models
 ```
-Replace `<container_id>` with your running Docker container ID and `<model_name>.pickle` with your model's name.
+Replace `<container_id>` with your running Docker container ID and `<model_name>.pth` with your model's name.
 
 3. Alternatively, the `train.py` script can also be run locally as follows:
 
 ```bash
-cd training
-python train.py
+python .\training\train.py
 ```
 
 ### Inference
@@ -98,7 +97,7 @@ python train.py
 
 - Build the inference Docker image:
 ```bash
-docker build -f ./inference/Dockerfile --build-arg model_name=<model_name>.pickle --build-arg settings_name=settings.json -t inference_image .
+docker build -f ./inference/Dockerfile --build-arg model_name=<model_name>.pth --build-arg settings_name=settings.json -t inference_image .
 ```
 - Run the inference Docker container:
 ```bash
@@ -109,6 +108,11 @@ docker run -v /path_to_your_local_model_directory:/app/models -v /path_to_your_i
 docker run -it inference_image /bin/bash  
 ```
 After that ensure that you have your results in the `results` directory in your inference container.
+2. Alternatively, the `run.py` script can also be run locally as follows:
+
+```bash
+python .\inference\run.py
+```
 
 ## Project Structure
 ```
@@ -139,8 +143,7 @@ Iris_Classification_DS_Project
 Run unit tests to ensure code reliability:
 
 ```
-cd unittests
-python -m unittest
+python .\unittests\unittests.py
 ```
 
 ## Contributing
